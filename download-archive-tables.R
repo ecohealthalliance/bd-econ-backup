@@ -22,13 +22,13 @@ git("config", "--global", "user.name", paste0("'", GIT_USER, "'"))
 git("config", "--global", "user.email", paste0("'", GIT_EMAIL, "'"))
 
 if (dir.exists(DATA_PATH)) unlink(DATA_PATH, recursive = TRUE)
-git_clone(repo = DATA_REPO_URL, dir = DATA_PATH)
+git_clone(repo = DATA_REPO_URL, dir = DATA_PATH, echo=  FALSE)
 unlink(list.files(DATA_PATH, "\\.csv$", full.names = TRUE))
 
 at_schema = get_airtable_schema(AT_BASE, AIRTABLE_LOGIN_EMAIL, AIRTABLE_LOGIN_PWD)
 tables <- airtable_names(at_schema)
 
 save_airtable(AT_BASE, tables, path = DATA_PATH, attachments_dir = file.path(DATA_PATH, "attachments"))
-git_addpush(DATA_PATH, commit_message = paste("Auto-commit data update ", Sys.time()))
+git_addpush(DATA_PATH, commit_message = paste("Auto-commit data update ", Sys.time()), , echo = FALSE)
 
 

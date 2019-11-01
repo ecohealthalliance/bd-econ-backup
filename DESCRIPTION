@@ -16,7 +16,6 @@ Depends:
     R.utils,
     webdriver,
     jsonlite,
-    rdrop2,
     base64enc
 Remotes:
     bergant/airtabler
