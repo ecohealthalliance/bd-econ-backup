@@ -1,6 +1,3 @@
-before_script:
-  - echo $GIT_CRYPT_KEY64 > git_crypt_key.key64 && base64 -d git_crypt_key.key64 > git_crypt_key.key && git-crypt unlock git_crypt_key.key
-
 cache:
   key: common-cache
   paths:
@@ -32,6 +29,8 @@ build-image:
 nightly:
   stage: run
   image: $CI_REGISTRY_IMAGE:latest
+  before_script:
+  - echo $GIT_CRYPT_KEY64 > git_crypt_key.key64 && base64 -d git_crypt_key.key64 > git_crypt_key.key && git-crypt unlock git_crypt_key.key
   only:
     - schedules
   artifacts:
