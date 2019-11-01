@@ -1,7 +1,3 @@
-cache:
-  key: common-cache
-  paths:
-    - .cache/
 
 stages:
   - prebuild
