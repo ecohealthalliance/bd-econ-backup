@@ -1,18 +1,37 @@
-image: rocker/verse:latest
-
 before_script:
-  - apt-get update && apt-get install -y --no-install-recommends --no-upgrade rsync git-crypt
   - echo $GIT_CRYPT_KEY64 > git_crypt_key.key64 && base64 -d git_crypt_key.key64 > git_crypt_key.key && git-crypt unlock git_crypt_key.key
-  - mkdir -p $CI_PROJECT_DIR/.cache; rsync -r --ignore-existing /usr/local/lib/R/site-library/ $CI_PROJECT_DIR/.cache/; rm -rf /usr/local/lib/R/site-library; ln -sf $CI_PROJECT_DIR/.cache /usr/local/lib/R/site-library
-  - Rscript -e "devtools::install_deps(dependencies=TRUE)"
-
 
 cache:
   key: common-cache
   paths:
     - .cache/
 
+stages:
+  - prebuild
+  - run
+
+build-image:
+  stage: prebuild
+  image: ecohealthalliance/docker-compose-git-crypt
+  services:
+    - docker:19.03.1-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --build-arg GITHUB_PAT=$GITHUB_PAT --build-arg PKG_COMMIT=$PKG_COMMIT --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    changes:
+      - Dockerfile
+      - DESCRIPTION
+
 nightly:
+  stage: run
+  image: $CI_REGISTRY_IMAGE:latest
   only:
     - schedules
   artifacts:
