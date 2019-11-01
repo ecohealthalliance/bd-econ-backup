@@ -8,14 +8,13 @@ library(webdriver)
 library(jsonlite)
 devtools::load_all()
 
-webdriver::install_phantomjs()
+if (inherits(try(run_phantomjs()), "try-error")) webdriver::install_phantomjs()
 
 DATA_PATH = "data" # Where locally to store data
-DATA_REPO_URL = Sys.getenv("REPO_URL") # storage repo
+DATA_REPO_URL = Sys.getenv("DATA_REPO_URL") # storage repo
 AT_BASE = Sys.getenv("AT_BASE") # The base we are working off of
 AIRTABLE_LOGIN_EMAIL = Sys.getenv("AIRTABLE_LOGIN_EMAIL") #airtable creds.  Note that AIRTABLE_API_KEY is also needed in the environment
 AIRTABLE_LOGIN_PWD = Sys.getenv("AIRTABLE_LOGIN_PWD")
-HUMAN_BASE = Sys.getenv("HUMAN_BASE") # The base we are working off of
 GIT_USER = Sys.getenv("GIT_USER")
 GIT_EMAIL = Sys.getenv("GIT_EMAIL")
 
@@ -23,7 +22,7 @@ git("config", "--global", "user.name", paste0("'", GIT_USER, "'"))
 git("config", "--global", "user.email", paste0("'", GIT_EMAIL, "'"))
 
 if (dir.exists(DATA_PATH)) unlink(DATA_PATH, recursive = TRUE)
-git_clone(repo = REPO_URL, dir = DATA_PATH)
+git_clone(repo = DATA_REPO_URL, dir = DATA_PATH)
 unlink(list.files(DATA_PATH, "\\.csv$", full.names = TRUE))
 
 at_schema = get_airtable_schema(AT_BASE, AIRTABLE_LOGIN_EMAIL, AIRTABLE_LOGIN_PWD)

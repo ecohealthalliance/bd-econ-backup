@@ -1,3 +1,5 @@
-# airtable-archive
+# bd-econ-backup
 
-Workflow to archive an AirTable base as CSVs in a git repository.
+Workflow to backup airtable of Bangladesh Economics data to CSVs on GitHub.
+
+.Renviron file is encrypted with git-crypt

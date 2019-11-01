@@ -1,15 +1,10 @@
 image: rocker/verse:latest
 
 before_script:
-  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
-  - mkdir -p ~/.ssh
-  - chmod 700 ~/.ssh
-  - ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-  - apt-get update && apt-get install -y --no-install-recommends --no-upgrade libssl-dev rsync
+  - apt-get update && apt-get install -y --no-install-recommends --no-upgrade libssl-dev rsync git-crypt
   - mkdir -p $CI_PROJECT_DIR/.cache; rsync -r --ignore-existing /usr/local/lib/R/site-library/ $CI_PROJECT_DIR/.cache/; rm -rf /usr/local/lib/R/site-library; ln -sf $CI_PROJECT_DIR/.cache /usr/local/lib/R/site-library
   - Rscript -e "devtools::install_deps(dependencies=TRUE)"
+  - echo $GIT_ENCRYPT_KEY64 > git_crypt_key.key64 && base64 -d git_crypt_key.key64 > git_crypt_key.key && git-crypt unlock git_crypt_key.key
 
 
 cache:
