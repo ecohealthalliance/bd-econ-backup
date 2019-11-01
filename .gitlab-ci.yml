@@ -1,7 +1,7 @@
 image: rocker/verse:latest
 
 before_script:
-  - apt-get update && apt-get install -y --no-install-recommends --no-upgrade rsync git-crypt bzip2
+  - apt-get update && apt-get install -y --no-install-recommends --no-upgrade rsync git-crypt
   - echo $GIT_CRYPT_KEY64 > git_crypt_key.key64 && base64 -d git_crypt_key.key64 > git_crypt_key.key && git-crypt unlock git_crypt_key.key
   - mkdir -p $CI_PROJECT_DIR/.cache; rsync -r --ignore-existing /usr/local/lib/R/site-library/ $CI_PROJECT_DIR/.cache/; rm -rf /usr/local/lib/R/site-library; ln -sf $CI_PROJECT_DIR/.cache /usr/local/lib/R/site-library
   - Rscript -e "devtools::install_deps(dependencies=TRUE)"
